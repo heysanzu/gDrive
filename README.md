@@ -1,7 +1,6 @@
 # Drive
 
-A browser car game controlled by hand gestures via your webcam.  
-Tilt your hand to steer. Collect orbs, avoid rocks.
+An interactive 3D browser car game controlled entirely by **hand gestures** through your webcam. Tilt your hand left or right to steer, collect items, and dodge obstacles in real time!
 
 [![Play Game](https://img.shields.io/badge/▶_Play-Game-success?style=for-the-badge&logo=gamepad)](https://heysanzu.github.io/gameDrive)
 
