@@ -343,6 +343,11 @@
             const now = performance.now();
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                // First hand detected → instantly hide menu, game is running
+                if (!gameStarted && !gameOver) {
+                    gameStarted = true;
+                    hideUI();
+                }
                 lastHandTime = now;
                 const lm = results.multiHandLandmarks[0];
                 const wristX = lm[0].x;
@@ -382,6 +387,7 @@
         function restartGame() {
             score = 0;
             gameOver = false;
+            gameStarted = false;
             carX = 0;
             velocityX = 0;
             handTilt = 0;
@@ -409,8 +415,7 @@
             `;
             document.getElementById('restart').style.display = 'none';
 
-            showUI();
-            scheduleHide(4000);
+            showUI();   // show panel so player sees the instructions again
             animate();
         }
 
