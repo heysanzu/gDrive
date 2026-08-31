@@ -2,86 +2,161 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Drive</title>
     <link rel="icon" type="image/png" href="sanzu.png">
     <style>
         @font-face {
-        font-family: 'SanzuFont'; 
-        src: url('fonts/comic_sans_regular.ttf') format('truetype');
-        font-weight: normal;
-        font-style: normal;
-        font-display: swap; /* Helps the text show up faster */
+            font-family: 'SanzuFont';
+            src: url('fonts/comic_sans_regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
 
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            background: linear-gradient(to bottom, #4A90E2, #1E3A8A); 
-            font-family: 'SanzuFont', 'Comic Sans MS', cursive; 
-            color: #000;
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #111;
+            font-family: 'SanzuFont', 'Comic Sans MS', cursive;
+            color: #111;
         }
-        canvas { display: block; }
+
+        canvas {
+            display: block;
+            width: 100vw !important;
+            height: 100vh !important;
+        }
+
+        /* ── HUD overlay ── */
         #ui {
-            position: absolute; 
-            top: 20px; 
-            left: 20px; 
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: #ffffff;
-            color: #000000;
-            padding: 20px;
-            border-radius: 12px;
+            color: #111;
+            padding: clamp(10px, 2vw, 20px) clamp(12px, 2.5vw, 24px);
+            border-radius: 10px;
+            border: 2px solid #111;
             z-index: 10;
-            max-width: 320px;
-        }
-        h1 { 
-            margin: 0; 
-            font-size: 2rem; 
+            width: clamp(200px, 42vw, 340px);
             text-align: center;
-            color: #000000;
-            border: none;
-            border-bottom: 1px solid rgb(0, 0, 0);
-            padding-bottom: 5px;
-            margin: 20px 0;
+
+            /* auto-hide */
+            opacity: 1;
+            transition: opacity 0.15s ease;
+            pointer-events: auto;
         }
-        p { 
-            font-size: 1.2rem; 
-            text-align: center;
-            margin: 12px 0;
-            color: #000000;
+
+        #ui.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
-        #score {
-            font-size: 1.5rem;
-            text-align: center;
-            color: #000000;
+
+        /* ── Score chip — always visible ── */
+        #score-chip {
+            position: fixed;
+            top: clamp(8px, 2vw, 20px);
+            right: clamp(8px, 2vw, 20px);
+            background: #111;
+            color: #fff;
+            font-family: 'SanzuFont', 'Comic Sans MS', cursive;
+            font-size: clamp(1rem, 3vw, 1.5rem);
             font-weight: bold;
+            padding: clamp(6px, 1.2vw, 12px) clamp(10px, 2vw, 20px);
+            border-radius: 8px;
+            z-index: 20;
+            pointer-events: none;
+            letter-spacing: 0.02em;
         }
+
+        h1 {
+            margin: 0 0 clamp(6px, 1.2vw, 12px) 0;
+            font-size: clamp(1.1rem, 3.5vw, 2rem);
+            text-align: center;
+            color: #111;
+            border-bottom: 2px solid #111;
+            padding-bottom: clamp(4px, 0.8vw, 8px);
+        }
+
+        p {
+            font-size: clamp(0.7rem, 2vw, 1.1rem);
+            text-align: center;
+            margin: clamp(4px, 1vw, 10px) 0;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        /* hide hints on tiny screens once hidden class fires */
+        .hint { }
+
         #restart {
             display: none;
             font-family: 'SanzuFont', 'Comic Sans MS', cursive;
-            font-size: 1.5rem;
-            padding: 10px 20px;
-            margin: 10px auto;
-            background: #000000;
-            color: #ffffff;
-            border-radius: 12px;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            padding: clamp(6px, 1.2vw, 10px) clamp(12px, 2.5vw, 20px);
+            margin: clamp(6px, 1.2vw, 10px) auto 0;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             text-align: center;
+            width: 100%;
             pointer-events: all;
+            transition: background 0.2s, color 0.2s;
         }
-        #restart:hover {
-            background: #ffffff;
-            color: #000000;
+
+        #restart:hover, #restart:active {
+            background: #fff;
+            color: #111;
+            outline: 2px solid #111;
         }
+
         #loading {
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%);
-            background: #ffffff;
-            color: #000000;
-            font-size: 2.5rem; 
-            padding: 30px 50px;
-            border-radius: 12px;
+            position: fixed;
+            bottom: clamp(10px, 2vw, 18px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            color: #fff;
+            font-family: 'SanzuFont', 'Comic Sans MS', cursive;
+            font-size: clamp(0.6rem, 1.8vw, 0.85rem);
+            padding: 5px 14px;
+            border-radius: 20px;
+            z-index: 100;
+            letter-spacing: 0.03em;
+            opacity: 0.85;
+        }
+
+        #ui a.gh-link {
+            display: block;
+            text-align: center;
+            font-size: clamp(0.65rem, 1.8vw, 0.9rem);
+            color: #555;
+            text-decoration: none;
+            margin-top: clamp(6px, 1.2vw, 10px);
+            border-top: 1px solid #ddd;
+            padding-top: clamp(5px, 1vw, 8px);
+            word-break: break-all;
+        }
+        #ui a.gh-link:hover { color: #111; }
+
+        /* game-over text injected by JS */
+        .gameover-title {
+            font-size: clamp(1.4rem, 5vw, 2rem) !important;
+            color: #111 !important;
+            font-weight: bold;
+        }
+        .gameover-sub {
+            font-size: clamp(0.7rem, 2vw, 1rem) !important;
+            color: #555 !important;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -92,16 +167,36 @@
 
     <div id="ui">
         <h1>Drive</h1>
-        <p>🖐 Tilt hand → STEER</p>
-        <p>Keep your hand visible to drive!</p>
-        <p>Collect boosts, avoid rocks!</p>
-        <div id="score">Score: 0</div>
+        <p class="hint">🖐 Tilt hand → STEER</p>
+        <p class="hint">Keep your hand visible to drive!</p>
+        <p class="hint">Collect boosts, avoid rocks!</p>
         <button id="restart" onclick="restartGame()">Restart</button>
+        <a class="gh-link" href="https://github.com/heysanzu/gameDrive" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
-    <div id="loading">Loading camera...</div>
+
+    <div id="score-chip">Score: 0</div>
+
+    <div id="loading">Loading camera…</div>
 
     <script>
-        // === GAME VARIABLES ===
+        // ── AUTO-HIDE UI ──────────────────────────────────────────────
+        const uiEl = document.getElementById('ui');
+        let hideTimer = null;
+        let gameStarted = false;   // flips true the moment a hand is first seen
+
+        function hideUI() {
+            clearTimeout(hideTimer);
+            uiEl.classList.add('hidden');
+        }
+
+        function showUI() {
+            clearTimeout(hideTimer);
+            uiEl.classList.remove('hidden');
+        }
+
+        // No interaction-based show during gameplay — only game-over restores it
+
+        // ── GAME VARIABLES ────────────────────────────────────────────
         let score = 0;
         let gameOver = false;
         let carX = 0;
@@ -116,9 +211,9 @@
         const ROCK_GAP = 200;
         const STRIPE_SPACING = 20;
 
-        // === THREE.JS SETUP ===
+        // ── THREE.JS SETUP ────────────────────────────────────────────
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87CEEB);
+        scene.background = new THREE.Color(0xdddddd); // grey sky
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 5, 15);
@@ -130,46 +225,46 @@
         document.body.appendChild(renderer.domElement);
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
         scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(10, 20, 10);
         scene.add(dirLight);
 
-        // Sun
+        // Sun → grey/white disc
         const sunGeo = new THREE.SphereGeometry(8, 32, 32);
-        const sunMat = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
+        const sunMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const sun = new THREE.Mesh(sunGeo, sunMat);
         sun.position.set(40, 30, -200);
         scene.add(sun);
-        const sunLight = new THREE.PointLight(0xFFFF00, 2, 500);
+        const sunLight = new THREE.PointLight(0xffffff, 1.5, 500);
         sunLight.position.copy(sun.position);
         scene.add(sunLight);
 
-        // Road
+        // Road — dark grey
         const roadGeo = new THREE.PlaneGeometry(ROAD_WIDTH, 10000);
-        const roadMat = new THREE.MeshLambertMaterial({ color: 0x333333 });
+        const roadMat = new THREE.MeshLambertMaterial({ color: 0x222222 });
         const road = new THREE.Mesh(roadGeo, roadMat);
         road.rotation.x = -Math.PI / 2;
         road.position.y = -0.1;
         scene.add(road);
 
-        // Footpaths (sidewalks)
+        // Footpaths — black
         const footpathWidth = 5;
         const footpathGeo = new THREE.PlaneGeometry(footpathWidth, 10000);
-        const footpathMat = new THREE.MeshLambertMaterial({ color: 0x000000 });
-        
+        const footpathMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+
         const leftFootpath = new THREE.Mesh(footpathGeo, footpathMat);
         leftFootpath.rotation.x = -Math.PI / 2;
-        leftFootpath.position.set(-(ROAD_WIDTH/2 + footpathWidth/2), -0.5, 0);
+        leftFootpath.position.set(-(ROAD_WIDTH / 2 + footpathWidth / 2), -0.5, 0);
         scene.add(leftFootpath);
-        
+
         const rightFootpath = new THREE.Mesh(footpathGeo, footpathMat);
         rightFootpath.rotation.x = -Math.PI / 2;
-        rightFootpath.position.set((ROAD_WIDTH/2 + footpathWidth/2), -0.5, 0);
+        rightFootpath.position.set((ROAD_WIDTH / 2 + footpathWidth / 2), -0.5, 0);
         scene.add(rightFootpath);
 
-        // Moving road stripes
+        // Moving road stripes — white
         function createStripes() {
             const stripeGeo = new THREE.PlaneGeometry(0.5, 10);
             const stripeMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
@@ -183,16 +278,15 @@
         }
         createStripes();
 
-        // Player Car
+        // Player Car — white body, black wheels
         const carGroup = new THREE.Group();
         const carBodyGeo = new THREE.BoxGeometry(2, 1, 4);
-        const carBodyMat = new THREE.MeshLambertMaterial({ color: 0x0070C0 });
+        const carBodyMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
         const carBody = new THREE.Mesh(carBodyGeo, carBodyMat);
         carGroup.add(carBody);
 
-        // Wheels
         const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-        const wheelMat = new THREE.MeshLambertMaterial({ color: 0x000000 });
+        const wheelMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
         for (let i = 0; i < 4; i++) {
             const wheel = new THREE.Mesh(wheelGeo, wheelMat);
             wheel.rotation.z = Math.PI / 2;
@@ -207,24 +301,24 @@
         carGroup.position.set(0, 1, 0);
         scene.add(carGroup);
 
-      function createBoost(z) {
-    // Generate a random hex color
-        const randomColor = Math.random() * 0xffffff;    
-        const geo = new THREE.SphereGeometry(1, 16, 16);
-    // Use the randomColor variable here
-        const mat = new THREE.MeshLambertMaterial({ color: randomColor });    
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set((Math.random() - 0.5) * (ROAD_WIDTH - 2), 1, z);
-        scene.add(mesh);
-        boosts.push({ mesh, z });
-}
+        // Boost — grey shades only
+        function createBoost(z) {
+            const greys = [0xffffff, 0xcccccc, 0x999999, 0x666666, 0x444444];
+            const randomColor = greys[Math.floor(Math.random() * greys.length)];
+            const geo = new THREE.SphereGeometry(1, 16, 16);
+            const mat = new THREE.MeshLambertMaterial({ color: randomColor });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set((Math.random() - 0.5) * (ROAD_WIDTH - 2), 1, z);
+            scene.add(mesh);
+            boosts.push({ mesh, z });
+        }
 
-        // Rock Creator
+        // Rock — dark grey / mid grey
         function createRock(z) {
             const isStone = Math.random() > 0.5;
             const size = isStone ? 1.5 : 2.5;
             const geo = new THREE.DodecahedronGeometry(size, 0);
-            const mat = new THREE.MeshLambertMaterial({ color: isStone ? 0x888888 : 0x292929 });
+            const mat = new THREE.MeshLambertMaterial({ color: isStone ? 0x888888 : 0x333333 });
             const mesh = new THREE.Mesh(geo, mat);
             mesh.position.set(
                 (Math.random() - 0.5) * (ROAD_WIDTH - 4),
@@ -238,21 +332,19 @@
         createBoost(-50);
         createRock(-100);
 
-        // === MEDIAPIPE HANDS ===
+        // ── MEDIAPIPE HANDS ───────────────────────────────────────────
         const video = document.createElement('video');
         let handTilt = 0;
         let lastHandTime = performance.now();
         const HAND_TIMEOUT = 1000;
 
         function onResults(results) {
-            const now = performance.now();
             document.getElementById('loading').style.display = 'none';
+            const now = performance.now();
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 lastHandTime = now;
                 const lm = results.multiHandLandmarks[0];
-
-                // Hand tilt for steering
                 const wristX = lm[0].x;
                 const middleMCPX = lm[9].x;
                 const targetTilt = -(middleMCPX - wristX) * 7;
@@ -282,15 +374,19 @@
         });
         cameraUtils.start();
 
-        // === GAME LOGIC ===
+        // ── GAME LOGIC ────────────────────────────────────────────────
+        function updateScoreChip() {
+            document.getElementById('score-chip').innerText = `Score: ${score}`;
+        }
+
         function restartGame() {
             score = 0;
             gameOver = false;
             carX = 0;
             velocityX = 0;
             handTilt = 0;
-            document.getElementById('score').innerText = `Score: ${score}`;
-            document.getElementById('restart').style.display = 'none';
+
+            updateScoreChip();
 
             boosts.forEach(({ mesh }) => scene.remove(mesh));
             rocks.forEach(({ mesh }) => scene.remove(mesh));
@@ -303,20 +399,22 @@
                 stripe.position.z = -i * STRIPE_SPACING;
             });
 
-            const ui = document.getElementById('ui');
-            ui.innerHTML = `
+            uiEl.innerHTML = `
                 <h1>Drive</h1>
-                <p>🖐 Tilt hand → STEER</p>
-                <p>Keep your hand visible to drive!</p>
-                <p>Collect boosts, avoid rocks!</p>
-                <div id="score">Score: 0</div>
+                <p class="hint">🖐 Tilt hand → STEER</p>
+                <p class="hint">Keep your hand visible to drive!</p>
+                <p class="hint">Collect boosts, avoid rocks!</p>
                 <button id="restart" onclick="restartGame()">Restart</button>
+                <a class="gh-link" href="https://github.com/heysanzu/gameDrive" target="_blank" rel="noopener">GitHub ↗</a>
             `;
+            document.getElementById('restart').style.display = 'none';
 
+            showUI();
+            scheduleHide(4000);
             animate();
         }
 
-        // === ANIMATION LOOP ===
+        // ── ANIMATION LOOP ────────────────────────────────────────────
         const clock = new THREE.Clock();
 
         function animate() {
@@ -325,7 +423,6 @@
 
             const delta = clock.getDelta();
 
-            // Steering
             velocityX += handTilt * STEER_SENSITIVITY * delta * 60;
             velocityX *= 0.8;
             carX += velocityX * delta * 60;
@@ -334,57 +431,46 @@
 
             const forwardSpeed = SPEED * delta * 60;
 
-            // Move road stripes
             stripes.forEach(stripe => {
                 stripe.position.z += forwardSpeed;
-                if (stripe.position.z > 10) {
-                    stripe.position.z -= stripes.length * STRIPE_SPACING;
-                }
+                if (stripe.position.z > 10) stripe.position.z -= stripes.length * STRIPE_SPACING;
             });
 
-            // Move boosts
             let i = 0;
             while (i < boosts.length) {
                 const boost = boosts[i];
                 boost.z += forwardSpeed;
                 boost.mesh.position.z = boost.z;
-                if (boost.z > 10) {
-                    scene.remove(boost.mesh);
-                    boosts.splice(i, 1);
-                    continue;
-                }
+                if (boost.z > 10) { scene.remove(boost.mesh); boosts.splice(i, 1); continue; }
                 if (Math.abs(boost.mesh.position.x - carX) < 2 && Math.abs(boost.z) < 2) {
                     scene.remove(boost.mesh);
                     boosts.splice(i, 1);
                     score += 10;
-                    document.getElementById('score').innerText = `Score: ${score}`;
+                    updateScoreChip();
                     continue;
                 }
                 i++;
             }
 
-            // Move rocks
             i = 0;
             while (i < rocks.length) {
                 const rock = rocks[i];
                 rock.z += forwardSpeed;
                 rock.mesh.position.z = rock.z;
-                if (rock.z > 10) {
-                    scene.remove(rock.mesh);
-                    rocks.splice(i, 1);
-                    continue;
-                }
+                if (rock.z > 10) { scene.remove(rock.mesh); rocks.splice(i, 1); continue; }
                 if (Math.abs(rock.mesh.position.x - carX) < 2 && Math.abs(rock.z) < 2) {
                     gameOver = true;
+                    clearTimeout(hideTimer);
+                    uiEl.classList.remove('hidden');
+
                     document.getElementById('restart').style.display = 'block';
-                    document.getElementById('ui').innerHTML += '<p style="font-size:2rem;color:#000;">GAME OVER!</p>';
-                    document.getElementById('ui').innerHTML += '<p style="font-size:1rem;color:#000;">by Sanzu</p>';
+                    uiEl.innerHTML += '<p class="gameover-title">GAME OVER!</p>';
+                    uiEl.innerHTML += '<p class="gameover-sub">by Sanzu</p>';
                     return;
                 }
                 i++;
             }
 
-            // Spawn new boosts and rocks
             if (boosts.length === 0) {
                 createBoost(-50);
             } else if (boosts[boosts.length - 1].z > -500) {
@@ -396,7 +482,6 @@
                 createRock(rocks[rocks.length - 1].z - ROCK_GAP);
             }
 
-            // Camera follows car
             camera.position.z = carGroup.position.z + 15;
             camera.position.x = carGroup.position.x * 0.5;
             camera.lookAt(carGroup.position.x * 0.5, 1, carGroup.position.z);
@@ -406,7 +491,7 @@
 
         animate();
 
-        // Resize
+        // ── RESIZE ───────────────────────────────────────────────────
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -414,8 +499,4 @@
         });
     </script>
 </body>
-
 </html>
-
-
-
