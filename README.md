@@ -3,15 +3,18 @@
 A browser car game controlled by hand gestures via your webcam.  
 Tilt your hand to steer. Collect orbs, avoid rocks.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=github)](https://heysanzu.github.io/gameDrive)
+[![Play Game](https://img.shields.io/badge/▶_Play-Game-success?style=for-the-badge&logo=gamepad)](https://heysanzu.github.io/gameDrive)
+
 ![Thumbnail](src/cover.png)
 
----
-
-**Live**: https://heysanzu.github.io/gameDrive  
-**Shahnewaz**: [github.com/heysanzu](https://github.com/heysanzu)
+---  
 
 ```bash
 git clone https://github.com/heysanzu/gameDrive.git
 cd gameDrive
 ```
+<p align="left">
+  <img src="sanzu.png" alt="Sanzu - Python notes & IDE for Android devices" width="90">
+</p>
+
+Maintained by [@heysanzu](https://github.com/heysanzu)
