@@ -3,9 +3,7 @@
 A browser car game controlled by hand gestures via your webcam.  
 Tilt your hand to steer. Collect orbs, avoid rocks.
 
-<p align="center">
-  <img src="src/cover.png" alt="Thumbnail" width="800">
-</p>
+![Thumbnail](src/cover.png)
 
 ---
 
