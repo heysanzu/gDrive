@@ -2,7 +2,7 @@
   "name": "Drive",
   "short_name": "Drive",
   "description": "A browser car game controlled by hand gestures via your webcam. by Sanzu",
-  "start_url": "/gameDrive/",
+  "start_url": "/sanzuDrive/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
