@@ -4,7 +4,7 @@ An interactive 3D browser car game controlled entirely by **hand gestures** thro
 
 [![Play Game](https://img.shields.io/badge/▶_Play-Game-success?style=for-the-badge&logo=gamepad)](https://heysanzu.github.io/gameDrive)
 
-![Thumbnail](src/cover.png)
+![Thumbnail](src/driveUI.png)
 
 ---  
 
