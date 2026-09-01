@@ -310,7 +310,7 @@ function restartGame() {
         <p class="hint">Keep your hand visible to drive!</p>
         <p class="hint">Collect boosts, avoid rocks!</p>
         <button id="restart" onclick="restartGame()">Restart</button>
-        <a class="gh-link" href="https://github.com/heysanzu/gameDrive" target="_blank" rel="noopener">GitHub ↗</a>
+        <a class="gh-link" href="https://github.com/heysanzu/sanzuDrive" target="_blank" rel="noopener">GitHub ↗</a>
     `;
     document.getElementById('restart').style.display = 'none';
 
