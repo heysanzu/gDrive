@@ -13,7 +13,7 @@ git clone https://github.com/heysanzu/gameDrive.git
 cd gameDrive
 ```
 <p align="left">
-  <img src="sanzu.png" alt="Sanzu - Python notes & IDE for Android devices" width="90">
+  <img src="src/sanzu.png" alt="Sanzu - Python notes & IDE for Android devices" width="90">
 </p>
 
 Maintained by [@heysanzu](https://github.com/heysanzu)
