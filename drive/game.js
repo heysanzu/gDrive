@@ -1,4 +1,3 @@
-// ── AUTO-HIDE UI ──────────────────────────────────────────────
 const uiEl = document.getElementById('ui');
 let hideTimer = null;
 let gameStarted = false;
@@ -13,7 +12,6 @@ function showUI() {
     uiEl.classList.remove('hidden');
 }
 
-// ── MUTE BUTTON ───────────────────────────────────────────────
 let muted = false;
 
 const muteBtn = document.createElement('button');
@@ -37,7 +35,6 @@ function iconMute() {
     return `<img src="src/icons/mute.png" alt="mute">`;
 }
 
-// ── AUDIO ─────────────────────────────────────────────────────
 const bgTracks = [
     'src/sounds/bg1.mp3',
     'src/sounds/bg2.mp3',
@@ -94,7 +91,6 @@ function playCrashSound() {
     sndCrash.play().catch(() => {});
 }
 
-// ── GAME VARIABLES ────────────────────────────────────────────
 let score = 0;
 let gameOver = false;
 let carX = 0;
@@ -109,7 +105,6 @@ const BOOST_GAP = 250;
 const ROCK_GAP = 200;
 const STRIPE_SPACING = 20;
 
-// ── THREE.JS SETUP ────────────────────────────────────────────
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xdddddd);
 
@@ -193,7 +188,6 @@ for (let i = 0; i < 4; i++) {
 carGroup.position.set(0, 1, 0);
 scene.add(carGroup);
 
-// ── OBJECT CREATORS ───────────────────────────────────────────
 const sanzuTexture = new THREE.TextureLoader().load('src/sanzu.png');
 
 function createBoost(z) {
@@ -223,7 +217,6 @@ function createRock(z) {
 createBoost(-50);
 createRock(-100);
 
-// ── MEDIAPIPE HANDS ───────────────────────────────────────────
 const video = document.createElement('video');
 let handTilt = 0;
 let lastHandTime = performance.now();
@@ -270,7 +263,7 @@ const cameraUtils = new Camera(video, {
 });
 cameraUtils.start();
 
-// ── GAME LOGIC ────────────────────────────────────────────────
+// -- GAME LOGIC --
 function updateScoreChip() {
     document.getElementById('score-chip').innerText = `Score: ${score}`;
 }
@@ -310,7 +303,6 @@ function restartGame() {
     animate();
 }
 
-// ── ANIMATION LOOP ────────────────────────────────────────────
 const clock = new THREE.Clock();
 
 function animate() {
@@ -390,7 +382,7 @@ function animate() {
 
 animate();
 
-// ── RESIZE ───────────────────────────────────────────────────
+// -- RESIZE --
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
