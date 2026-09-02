@@ -42,6 +42,8 @@ const bgTracks = [
     'src/sounds/bg1.mp3',
     'src/sounds/bg2.mp3',
     'src/sounds/bg3.mp3',
+    'src/sounds/bg4.mp3',
+    'src/sounds/bg5.mp3',
 ];
 
 let bgIndex = Math.floor(Math.random() * bgTracks.length);
