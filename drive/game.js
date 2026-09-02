@@ -27,6 +27,7 @@ muteBtn.addEventListener('click', () => {
     muteBtn.innerHTML = muted ? iconMute() : iconUnmute();
     sndBg.muted  = muted;
     sndBg.volume = muted ? 0 : 0.25;
+    
 });
 
 function iconUnmute() {
@@ -181,13 +182,13 @@ carGroup.position.set(0, 1, 0);
 scene.add(carGroup);
 
 // ── OBJECT CREATORS ───────────────────────────────────────────
+const sanzuTexture = new THREE.TextureLoader().load('src/sanzu.png');
+
 function createBoost(z) {
-    const greys = [0xffffff, 0xcccccc, 0x999999, 0x666666, 0x444444];
-    const randomColor = greys[Math.floor(Math.random() * greys.length)];
-    const geo = new THREE.SphereGeometry(1, 16, 16);
-    const mat = new THREE.MeshLambertMaterial({ color: randomColor });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set((Math.random() - 0.5) * (ROAD_WIDTH - 2), 1, z);
+    const mat = new THREE.SpriteMaterial({ map: sanzuTexture });
+    const mesh = new THREE.Sprite(mat);
+    mesh.scale.set(2.5, 2.5, 1);
+    mesh.position.set((Math.random() - 0.5) * (ROAD_WIDTH - 2), 1.2, z);
     scene.add(mesh);
     boosts.push({ mesh, z });
 }
