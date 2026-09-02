@@ -27,7 +27,6 @@ muteBtn.addEventListener('click', () => {
     muteBtn.innerHTML = muted ? iconMute() : iconUnmute();
     sndBg.muted  = muted;
     sndBg.volume = muted ? 0 : 0.25;
-    
 });
 
 function iconUnmute() {
@@ -39,10 +38,21 @@ function iconMute() {
 }
 
 // ── AUDIO ─────────────────────────────────────────────────────
+const bgTracks = [
+    'src/sounds/bg1.mp3',
+    'src/sounds/bg2.mp3',
+    'src/sounds/bg3.mp3',
+];
 
-const sndBg = new Audio('src/sounds/bg.mp3');
-sndBg.loop   = true;
+let bgIndex = Math.floor(Math.random() * bgTracks.length);
+const sndBg = new Audio(bgTracks[bgIndex]);
 sndBg.volume = 0.25;
+
+sndBg.addEventListener('ended', () => {
+    bgIndex = (bgIndex + 1) % bgTracks.length;
+    sndBg.src = bgTracks[bgIndex];
+    if (!muted) sndBg.play().catch(() => {});
+});
 
 const sndEngine = new Audio('src/sounds/engine.mp3');
 sndEngine.loop   = true;
