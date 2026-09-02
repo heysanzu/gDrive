@@ -13,93 +13,72 @@ function showUI() {
     uiEl.classList.remove('hidden');
 }
 
+// ── MUTE BUTTON ───────────────────────────────────────────────
+let muted = false;
+
+const muteBtn = document.createElement('button');
+muteBtn.id = 'mute-btn';
+muteBtn.title = 'Toggle sound';
+muteBtn.innerHTML = iconUnmute();
+document.body.appendChild(muteBtn);
+
+muteBtn.addEventListener('click', () => {
+    muted = !muted;
+    muteBtn.innerHTML = muted ? iconMute() : iconUnmute();
+    sndBg.muted  = muted;
+    sndBg.volume = muted ? 0 : 0.25;
+});
+
+function iconUnmute() {
+    return `<img src="src/icons/unmute.png" alt="unmute">`;
+}
+
+function iconMute() {
+    return `<img src="src/icons/mute.png" alt="mute">`;
+}
+
 // ── AUDIO ─────────────────────────────────────────────────────
-let audioCtx = null;
-let engineNode = null;
-let engineGain = null;
-let bgNode = null;
-let bgGain = null;
 
-function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const sndBg = new Audio('src/sounds/bg.mp3');
+sndBg.loop   = true;
+sndBg.volume = 0.25;
 
-    // Background ambient drone — two detuned sawtooth oscillators
-    bgGain = audioCtx.createGain();
-    bgGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-    bgGain.connect(audioCtx.destination);
+const sndEngine = new Audio('src/sounds/engine.mp3');
+sndEngine.loop   = true;
+sndEngine.volume = 0;
 
-    [55, 55.4].forEach(freq => {
-        const osc = audioCtx.createOscillator();
-        osc.type = 'sawtooth';
-        osc.frequency.value = freq;
-        osc.connect(bgGain);
-        osc.start();
-    });
+const sndBoost = new Audio('src/sounds/boost.mp3');
+const sndCrash = new Audio('src/sounds/crash.mp3');
 
-    // Engine hum — sine wave, pitch rises slightly with speed
-    engineGain = audioCtx.createGain();
-    engineGain.gain.setValueAtTime(0, audioCtx.currentTime);
-    engineGain.connect(audioCtx.destination);
-
-    engineNode = audioCtx.createOscillator();
-    engineNode.type = 'sine';
-    engineNode.frequency.value = 90;
-    engineNode.connect(engineGain);
-    engineNode.start();
+function startAudio() {
+    if (!muted) {
+        sndBg.play().catch(() => {});
+        sndEngine.play().catch(() => {});
+    }
 }
 
 function updateEngineSound(speed) {
-    if (!audioCtx) return;
-    const targetFreq = 80 + Math.abs(speed) * 18;
-    engineNode.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.05);
-    engineGain.gain.setTargetAtTime(0.09, audioCtx.currentTime, 0.1);
+    if (muted) { sndEngine.volume = 0; return; }
+    const vol = Math.min(0.6, 0.05 + Math.abs(speed) * 0.15);
+    sndEngine.volume = vol;
 }
 
 function stopEngineSound() {
-    if (!engineGain) return;
-    engineGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+    sndEngine.volume = 0;
+    sndEngine.pause();
+    sndEngine.currentTime = 0;
 }
 
 function playBoostSound() {
-    if (!audioCtx) return;
-    const g = audioCtx.createGain();
-    g.gain.setValueAtTime(0.25, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-    g.connect(audioCtx.destination);
-
-    const osc = audioCtx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2);
-    osc.connect(g);
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.35);
+    if (muted) return;
+    sndBoost.currentTime = 0;
+    sndBoost.play().catch(() => {});
 }
 
 function playCrashSound() {
-    if (!audioCtx) return;
-    const bufferSize = audioCtx.sampleRate * 0.6;
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
-
-    const source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 400;
-
-    const g = audioCtx.createGain();
-    g.gain.setValueAtTime(0.6, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-
-    source.connect(filter);
-    filter.connect(g);
-    g.connect(audioCtx.destination);
-    source.start();
-    source.stop(audioCtx.currentTime + 0.6);
+    if (muted) return;
+    sndCrash.currentTime = 0;
+    sndCrash.play().catch(() => {});
 }
 
 // ── GAME VARIABLES ────────────────────────────────────────────
@@ -244,7 +223,7 @@ function onResults(results) {
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         if (!gameStarted && !gameOver) {
             gameStarted = true;
-            initAudio();
+            startAudio();
             hideUI();
         }
         lastHandTime = now;
