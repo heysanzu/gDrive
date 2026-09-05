@@ -1,6 +1,6 @@
 # Drive
 
-An interactive 3D browser car game controlled entirely by **hand gestures** through your webcam. Tilt your hand left or right to steer, collect items, and dodge obstacles in real time!
+An interactive 3D browser car game controlled entirely by hand gestures through your webcam. Tilt your hand left or right to steer, collect items, and dodge obstacles in real time!
 
 [![Play Game](https://img.shields.io/badge/▶_Play-Game-success?style=for-the-badge&logo=gamepad)](https://heysanzu.github.io/sanzuDrive)
 [![Download APP](https://img.shields.io/badge/_Download-APP-blue?style=for-the-badge&logo=github)](https://github.com/heysanzu/sanzuDrive/releases/download/Drive_v1.0/drive.apk)
